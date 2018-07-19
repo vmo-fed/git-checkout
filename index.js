@@ -1,33 +1,30 @@
-var inquirer = require('inquirer');
+#!/usr/local/bin/node
+const inquirer = require('inquirer');
+const exec = require("child_process").exec;
 
-inquirer
-  .prompt([
-    {
-      type: 'list',
-      name: 'theme',
-      message: 'What do you want to do?',
-      choices: [
-        'Order a pizza',
-        'Make a reservation',
-        new inquirer.Separator(),
-        'Ask for opening hours',
-        {
-          name: 'Contact support',
-          disabled: 'Unavailable at this time'
-        },
-        'Talk to the receptionist'
-      ]
-    },
-    {
-      type: 'list',
-      name: 'size',
-      message: 'What size do you need?',
-      choices: ['Jumbo', 'Large', 'Standard', 'Medium', 'Small', 'Micro'],
-      filter: function(val) {
-        return val.toLowerCase();
-      }
-    }
-  ])
-  .then(answers => {
-    console.log(JSON.stringify(answers, null, '  '));
+exec('git branch --all', function(error, stdout, stderr){
+  let branchArr = stdout.split(/\n/).filter(function(item){
+    return !!item;
   });
+
+  inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'branch',
+        message: 'Enter来切换分支',
+        choices: branchArr,
+        filter: function(val) {
+          return val.toLowerCase();
+        }
+      }
+    ])
+    .then(answers => {
+      let branch = answers.branch;
+      if (branch.indexOf('*')) {
+        branch = branch.replace('* ', '');
+      }
+
+      exec(`git checkout ${branch}`);
+    });
+})
