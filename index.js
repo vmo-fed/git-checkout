@@ -25,6 +25,14 @@ exec('git branch --all', function(error, stdout, stderr){
         branch = branch.replace('* ', '');
       }
 
-      exec(`git checkout ${branch}`);
+      exec(`git checkout ${branch}`, function(error, stdout, stderr) {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return;
+        }
+
+        console.log(stdout)
+        console.log(stderr)
+      });
     });
 })
